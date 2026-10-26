@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>國外旅遊不便險與旅平險試算比較</title>
+  <title>國外旅遊險與不便險試算比較</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -21,6 +21,17 @@
 
   <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
 
+    <!-- 備註提醒 -->
+    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg text-xs text-amber-900">
+      <p class="font-bold flex items-center gap-1">
+        <i class="fa-solid fa-triangle-exclamation"></i> 投保小常識：人壽保險 vs. 產物保險
+      </p>
+      <p class="mt-1">
+        • <strong>人壽公司</strong>（如南山人壽）：多僅提供「旅平險」（身故＋身心障礙＋醫療），<strong>不含不便險</strong>，費用較便宜。<br>
+        • <strong>產險公司</strong>（如南山產物、臺產）：提供「旅平險＋旅遊不便險」（班機/行李延誤、行程變更），保障最全面。
+      </p>
+    </div>
+
     <!-- 試算條件設定卡片 -->
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
       <h2 class="text-lg font-bold text-slate-800 border-b pb-3 mb-4 flex items-center gap-2">
@@ -28,216 +39,4 @@
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label class="block text-sm font-medium text-slate-600 mb-1">旅遊目的地</label>
-          <select id="region" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none" onchange="calculateApp()">
-            <option value="asia">日本 / 韓國 / 東南亞</option>
-            <option value="europe">歐洲 / 紐澳</option>
-            <option value="america">美國 / 加拿大</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-600 mb-1">旅遊天數（1-30天）</label>
-          <input type="number" id="days" value="5" min="1" max="30" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none" onchange="calculateApp()" oninput="calculateApp()">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-600 mb-1">保障方案等級</label>
-          <select id="planLevel" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none" onchange="calculateApp()">
-            <option value="basic">小資輕量型（旅平身故 300萬）</option>
-            <option value="standard" selected>超值標準型（旅平身故 500萬）</option>
-            <option value="premium">高額全包型（旅平身故 1000萬）</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
-    <!-- 方案比較卡片區 -->
-    <section class="space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-blue-600"></i> 各家產險保障與預估保費
-        </h2>
-        <span class="text-xs text-slate-500">*實際保費與保障內容以各產險公司投保當下條款為準</span>
-      </div>
-
-      <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- JS 動態生成產險卡片 -->
-      </div>
-    </section>
-
-    <!-- 比較總表 -->
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 overflow-hidden">
-      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-table-list text-blue-600"></i> 核心保障理賠比較一覽表
-      </h2>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-slate-600 border-collapse">
-          <thead class="bg-slate-100 text-slate-700 font-semibold border-b">
-            <tr>
-              <th class="p-3">產險公司</th>
-              <th class="p-3">預估保費</th>
-              <th class="p-3">班機延誤理賠</th>
-              <th class="p-3">行程變更 / 取消</th>
-              <th class="p-3">行李延誤</th>
-              <th class="p-3">特定地區突發疾病</th>
-              <th class="p-3">申辦與理賠管道</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody" class="divide-y divide-slate-100">
-            <!-- JS 動態生成表格欄位 -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 理賠管道說明 -->
-    <section class="bg-blue-50 border border-blue-200 rounded-xl p-5">
-      <h3 class="font-bold text-blue-900 text-base mb-2 flex items-center gap-2">
-        <i class="fa-solid fa-circle-info text-blue-600"></i> 理賠申請必備文件與管道叮嚀
-      </h3>
-      <ul class="list-disc list-inside text-sm text-blue-800 space-y-1">
-        <li><strong>班機延誤</strong>：請務必保留「登機證正本」與航空公司開立之「班機延誤證明」（臺灣產物若預先登錄航班可免開證明主動簡訊申請）。</li>
-        <li><strong>行李延誤/損失</strong>：需取得航空公司開立之行李延誤/損壞證明，以及購買必要日用品之發票明細。</li>
-        <li><strong>海外突發疾病就醫</strong>：需索取「診斷證明書」與「醫療費用收據正本/明細」。</li>
-      </ul>
-    </section>
-  </main>
-
-  <script>
-    const insuranceData = [
-      {
-        id: 'tw',
-        name: '臺灣產物保險',
-        badge: '主動理賠最便利',
-        badgeColor: 'bg-emerald-100 text-emerald-800',
-        baseRates: { basic: 350, standard: 550, premium: 980 },
-        delayBenefit: '滿 4 小時給付 6,000 元（最高 2.4 萬）',
-        cancelBenefit: '限額 5 ~ 10 萬元',
-        luggageBenefit: '定額 6,000 元',
-        diseaseBonus: '日韓 2 倍 / 美加 2.5 倍',
-        channel: '預先登錄航班享簡訊主動理賠 / 官網線上申辦',
-        features: ['網購預先登錄航班，延誤自動簡訊理賠', '包含班機改降慰問金 5,000 元', '突發疾病海外醫療自動加倍保額']
-      },
-      {
-        id: 'cathay',
-        name: '國泰產險',
-        badge: '理賠流程成熟',
-        badgeColor: 'bg-blue-100 text-blue-800',
-        baseRates: { basic: 380, standard: 580, premium: 1050 },
-        delayBenefit: '每滿 4 小時給付（最高 8,000 元/次）',
-        cancelBenefit: '限額最高 6 ~ 10 萬元',
-        luggageBenefit: '定額 3,000 ~ 5,000 元',
-        diseaseBonus: '視投保方案額度而定',
-        channel: '國泰線上 App / 門市郵寄 / 官網理賠專區',
-        features: ['不便險保障完整，涵蓋護照遺失補償', '包含信用卡盜用與食品中毒補償', '品牌知名度高，服務據點多']
-      },
-      {
-        id: 'fubon',
-        name: '富邦產險',
-        badge: '保障範圍最全面',
-        badgeColor: 'bg-amber-100 text-amber-800',
-        baseRates: { basic: 400, standard: 620, premium: 1100 },
-        delayBenefit: '每滿 4 小時 6,000 元（最高 1.2 萬）',
-        cancelBenefit: '實支實付最高 6 萬元',
-        luggageBenefit: '實支實付 / 定額擇優',
-        diseaseBonus: '依專案提供突發疾病加碼',
-        channel: '富邦官網專區 / 網路投保 App / 專員服務',
-        features: ['海外急難救助與高額專機救援', '行程取消/更改採實支實付精準補償', '海外突發疾病門診住院保障齊全']
-      },
-      {
-        id: 'chubb',
-        name: '安達產物',
-        badge: '醫療加碼高',
-        badgeColor: 'bg-purple-100 text-purple-800',
-        baseRates: { basic: 360, standard: 560, premium: 1000 },
-        delayBenefit: '滿 4 小時給付定額',
-        cancelBenefit: '依方案額度提供',
-        luggageBenefit: '定額補償',
-        diseaseBonus: '歐日韓 1.5 ~ 2 倍 / 美加加倍',
-        channel: '線上投保平台 / 合作保經代 / 官網郵寄申請',
-        features: ['涵蓋法定傳染病保障', '適合歐美日韓等高醫療費用國家', '海外突發疾病醫療加倍機制']
-      },
-      {
-        id: 'nanshan',
-        name: '南山產物',
-        badge: '變更補償額度高',
-        badgeColor: 'bg-rose-100 text-rose-800',
-        baseRates: { basic: 370, standard: 570, premium: 1020 },
-        delayBenefit: '滿 4 小時給付定額',
-        cancelBenefit: '限額最高 6 萬元',
-        luggageBenefit: '定額補償',
-        diseaseBonus: '依方案加碼',
-        channel: '南山產物線上理賠專區 / 服務中心',
-        features: ['行程變更與旅行文件遺失給付大方', '緊急醫療轉送服務', '線上投保操作簡易快速']
-      }
-    ];
-
-    function calculateApp() {
-      const region = document.getElementById('region').value;
-      const days = parseInt(document.getElementById('days').value) || 1;
-      const planLevel = document.getElementById('planLevel').value;
-
-      // 區域保費加成係數
-      let regionMultiplier = 1.0;
-      if (region === 'europe') regionMultiplier = 1.35;
-      if (region === 'america') regionMultiplier = 1.6;
-
-      // 天數加成係數 (以 5 天為基準)
-      const dayMultiplier = 1 + (days - 1) * 0.15;
-
-      const cardsContainer = document.getElementById('cardsContainer');
-      const tableBody = document.getElementById('tableBody');
-
-      cardsContainer.innerHTML = '';
-      tableBody.innerHTML = '';
-
-      insuranceData.forEach(item => {
-        // 估算保費
-        const base = item.baseRates[planLevel];
-        const estimatedFee = Math.round(base * dayMultiplier * regionMultiplier);
-
-        // 生成卡片
-        const cardHtml = `
-          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition">
-            <div>
-              <div class="flex justify-between items-start mb-2">
-                <h3 class="font-bold text-lg text-slate-800">${item.name}</h3>
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${item.badgeColor}">${item.badge}</span>
-              </div>
-              <div class="my-3 p-3 bg-slate-50 rounded-lg">
-                <span class="text-xs text-slate-500 block">預估保費 (${days}天)</span>
-                <span class="text-2xl font-extrabold text-blue-600">NT$ ${estimatedFee.toLocaleString()}</span>
-              </div>
-              <ul class="text-xs text-slate-600 space-y-2 mb-4">
-                <li class="flex items-start gap-1.5"><i class="fa-solid fa-plane-arrival text-blue-500 mt-0.5"></i> <span><strong>班機延誤：</strong>${item.delayBenefit}</span></li>
-                <li class="flex items-start gap-1.5"><i class="fa-solid fa-suitcase text-blue-500 mt-0.5"></i> <span><strong>行李延誤：</strong>${item.luggageBenefit}</span></li>
-                <li class="flex items-start gap-1.5"><i class="fa-solid fa-notes-medical text-blue-500 mt-0.5"></i> <span><strong>醫療加碼：</strong>${item.diseaseBonus}</span></li>
-              </ul>
-            </div>
-            <div class="border-t pt-3 text-xs text-slate-500">
-              <i class="fa-solid fa-headset text-slate-400 mr-1"></i> ${item.channel}
-            </div>
-          </div>
-        `;
-        cardsContainer.innerHTML += cardHtml;
-
-        // 生成表格
-        const rowHtml = `
-          <tr class="hover:bg-slate-50">
-            <td class="p-3 font-semibold text-slate-800">${item.name}</td>
-            <td class="p-3 font-bold text-blue-600">NT$ ${estimatedFee.toLocaleString()}</td>
-            <td class="p-3">${item.delayBenefit}</td>
-            <td class="p-3">${item.cancelBenefit}</td>
-            <td class="p-3">${item.luggageBenefit}</td>
-            <td class="p-3">${item.diseaseBonus}</td>
-            <td class="p-3 text-xs text-slate-500">${item.channel}</td>
-          </tr>
-        `;
-        tableBody.innerHTML += rowHtml;
-      });
-    }
-
-    // 初次載入自動計算
-    document.addEventListener('DOMContentLoaded', calculateApp);
-  </script>
-</body>
-</html>
+          <label class="block text-sm font-medium
