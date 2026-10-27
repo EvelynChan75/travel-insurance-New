@@ -1,42 +1,1105 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>國外旅遊險與不便險試算比較</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海外旅平險與旅遊不便險 - 智慧情境推薦與互動比較網頁 App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
-  <!-- Header -->
-  <header class="bg-blue-700 text-white shadow-md sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <i class="fa-solid fa-plane-departure text-2xl text-yellow-300"></i>
-        <h1 class="text-xl font-bold tracking-wide">海外旅遊險試算與比較工具</h1>
-      </div>
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg text-slate-900 leading-tight">海外旅平險智慧比價通</h1>
+                    <p class="text-[11px] text-slate-500">8 大產險詳細條款、情境推薦與官網直達投保</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="openWizard()" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl hover:shadow-lg hover:shadow-blue-500/25 transition-all">
+                    <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i>
+                    <span>智慧推薦</span>
+                </button>
+                <button id="compareBarBtn" onclick="openCompareModal()" class="relative hidden sm:flex items-center gap-2 bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-xl transition-all">
+                    <i class="fa-solid fa-code-compare"></i>
+                    <span>橫向對比</span>
+                    <span id="compareCountBadge" class="bg-blue-600 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Banner Callout -->
+        <div class="mb-6 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 text-white p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                <i class="fa-solid fa-plane-departure text-[220px]"></i>
+            </div>
+            <div class="relative z-10 max-w-3xl">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/30 text-blue-200 border border-blue-400/30 mb-3">
+                    <i class="fa-solid fa-circle-check text-green-400"></i> 整合官方直達投保連結
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2">出國旅平險 & 不便險 一站式輕鬆比價與線上投保</h2>
+                <p class="text-slate-300 text-xs sm:text-sm mb-5 leading-relaxed">完整收錄富邦、國泰、新安東京、安達、台產、中信、南山與明台等 8 大產險詳細條款，包含海外醫療、班機延誤、行李損失與急難專機，幫您選出最適方案並直接連至官網投保。</p>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="openWizard()" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-5 py-2.5 rounded-xl shadow-lg transition-all flex items-center gap-2 text-xs sm:text-sm">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> 30 秒情境測驗
+                    </button>
+                    <a href="#comparison-section" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-5 py-2.5 rounded-xl backdrop-blur-sm border border-white/15 transition-all text-xs sm:text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group"></i> 檢視 8 大產險條款
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Days Calculator Section -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 mb-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 text-base">
+                    <i class="fa-solid fa-sliders text-blue-600"></i> 篩選與保費試算條件
+                </h3>
+                <button onclick="resetFilters()" class="text-xs text-slate-500 hover:text-blue-600 font-medium transition-colors">
+                    <i class="fa-solid fa-rotate-right mr-1"></i>重置選項
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Region Filter -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">1. 目的地地區</label>
+                    <div class="relative">
+                        <select id="filterRegion" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs sm:text-sm rounded-xl p-2.5 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none cursor-pointer font-medium">
+                            <option value="japan_korea">🇯🇵🇰🇷 日本 / 韓國 (醫療加碼熱門)</option>
+                            <option value="southeast_asia">🇹🇭🇻🇳 東南亞 / 海島度假</option>
+                            <option value="europe_america">🇪🇺🇺🇸 歐美 / 長程遠途地區</option>
+                            <option value="china_other">🇨🇳港澳 / 中國大陸 / 其他</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-xs text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Days Slider -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-bold text-slate-600 uppercase">2. 預計出遊天數</label>
+                        <span id="daysDisplay" class="text-xs font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">5 天</span>
+                    </div>
+                    <input type="range" id="filterDays" min="1" max="30" value="5" oninput="updateDays(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                    <div class="flex justify-between text-[10px] text-slate-400 mt-1 font-medium">
+                        <span>1天</span>
+                        <span>15天</span>
+                        <span>30天</span>
+                    </div>
+                </div>
+
+                <!-- Covid Filter -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">3. 法定傳染病</label>
+                    <label class="flex items-center gap-2 cursor-pointer bg-slate-50 border border-slate-200 p-2.5 rounded-xl hover:bg-slate-100/70 transition-all">
+                        <input type="checkbox" id="filterCovid" onchange="applyFilters()" checked class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300 cursor-pointer">
+                        <span class="text-xs font-semibold text-slate-700">需涵蓋「新冠/登革熱」等法傳</span>
+                    </label>
+                </div>
+
+                <!-- Medical Coverage Filter -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase mb-1.5">4. 海外突發疾病額度</label>
+                    <div class="relative">
+                        <select id="filterMedical" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs sm:text-sm rounded-xl p-2.5 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none cursor-pointer font-medium">
+                            <option value="all">不限額度</option>
+                            <option value="high">100 萬以上 (推薦高醫療費地區)</option>
+                            <option value="medium">50 萬 - 100 萬 (一般輕量)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-3 top-3.5 text-xs text-slate-400 pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Results Section -->
+        <div id="comparison-section">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">8 大產險方案總覽</h3>
+                    <p class="text-xs text-slate-500">已試算依據目的地及天數之預估保費（提供官方投保直達連結）</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-500">排序方式：</span>
+                    <select id="sortBy" onchange="sortInsurance()" class="bg-white border border-slate-200 text-slate-700 text-xs font-semibold rounded-xl p-2 focus:outline-none">
+                        <option value="recommended">綜合評價優先</option>
+                        <option value="price_asc">預估保費 (低到高)</option>
+                        <option value="delay_desc">班機延誤給付 (高到低)</option>
+                        <option value="medical_desc">海外醫療給付 (高到低)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="insuranceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Dynamically Rendered -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Floating Compare Bar -->
+    <div id="floatingCompareBar" class="fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 p-4 shadow-2xl transition-transform transform translate-y-full">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-slate-900">已選擇 <span id="selectedCount" class="text-blue-600 font-extrabold">0</span> / 4 個方案橫向對比</h4>
+                    <p class="text-xs text-slate-500 hidden sm:block">點擊按鈕查看各家詳細條款數據對比</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="clearCompareList()" class="text-xs font-semibold text-slate-500 hover:text-slate-800 px-3 py-2">清除選擇</button>
+                <button onclick="openCompareModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl shadow-md transition-all">
+                    開啟橫向對比表
+                </button>
+            </div>
+        </div>
     </div>
-  </header>
 
-  <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
+    <!-- Modal 1: Recommendation Wizard -->
+    <div id="wizardModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-xl w-full shadow-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[90vh]">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6 relative">
+                <button onclick="closeWizard()" class="absolute top-5 right-5 text-white/80 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2.5 py-1 rounded-full text-white">Smart Match Wizard</span>
+                <h3 class="text-xl sm:text-2xl font-bold mt-2">旅平險情境智慧測驗</h3>
+                <p class="text-xs text-blue-100 mt-1">4 步回答，系統將依條款特性為您精算最適方案</p>
+                <!-- Progress -->
+                <div class="w-full bg-blue-900/40 h-1.5 rounded-full mt-4 overflow-hidden">
+                    <div id="wizardProgress" class="bg-white h-full w-1/4 transition-all duration-300"></div>
+                </div>
+            </div>
 
-    <!-- 備註提醒 -->
-    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg text-xs text-amber-900">
-      <p class="font-bold flex items-center gap-1">
-        <i class="fa-solid fa-triangle-exclamation"></i> 投保小常識：人壽保險 vs. 產物保險
-      </p>
-      <p class="mt-1">
-        • <strong>人壽公司</strong>（如南山人壽）：多僅提供「旅平險」（身故＋身心障礙＋醫療），<strong>不含不便險</strong>，費用較便宜。<br>
-        • <strong>產險公司</strong>（如南山產物、臺產）：提供「旅平險＋旅遊不便險」（班機/行李延誤、行程變更），保障最全面。
-      </p>
+            <!-- Wizard Body -->
+            <div class="p-6 overflow-y-auto flex-grow custom-scrollbar" id="wizardBody">
+                <!-- Step 1 -->
+                <div class="wizard-step" id="step1">
+                    <h4 class="font-bold text-slate-800 text-base sm:text-lg mb-1">1. 您本次旅遊的目的地是哪裡？</h4>
+                    <p class="text-xs text-slate-500 mb-4">影響海外突發疾病額度與日韓/歐美加碼建議。</p>
+                    <div class="space-y-3">
+                        <label onclick="selectWizardOption('destination', 'japan_korea')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🇯🇵🇰🇷</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">日本 / 韓國</div>
+                                    <div class="text-[11px] text-slate-500">醫療費用高，建議選有指定地區加碼者</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_dest" class="accent-blue-600">
+                        </label>
+                        <label onclick="selectWizardOption('destination', 'southeast_asia')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🇹🇭🇻🇳</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">東南亞 / 海島自由行</div>
+                                    <div class="text-[11px] text-slate-500">水上活動與腸胃突發狀況防護重點</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_dest" class="accent-blue-600">
+                        </label>
+                        <label onclick="selectWizardOption('destination', 'europe_america')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🇪🇺🇺🇸</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">歐美 / 遠程長途</div>
+                                    <div class="text-[11px] text-slate-500">醫療費用高昂，需要高額救援專機</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_dest" class="accent-blue-600">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="wizard-step hidden" id="step2">
+                    <h4 class="font-bold text-slate-800 text-base sm:text-lg mb-1">2. 本次同行成員包含以下對象嗎？</h4>
+                    <p class="text-xs text-slate-500 mb-4">影響海外醫療與急難救援額度建議。</p>
+                    <div class="space-y-3">
+                        <label onclick="selectWizardOption('member', 'elder_kid')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">👴👵👶</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">有長輩（>65歲）或幼童同行</div>
+                                    <div class="text-[11px] text-slate-500">重視急難救援專機上限與扎實醫療</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_member" class="accent-blue-600">
+                        </label>
+                        <label onclick="selectWizardOption('member', 'friends_solo')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🎒🏃</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">全成年朋友 / 個人自由行</div>
+                                    <div class="text-[11px] text-slate-500">追求 CP 值與靈活保障</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_member" class="accent-blue-600">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="wizard-step hidden" id="step3">
+                    <h4 class="font-bold text-slate-800 text-base sm:text-lg mb-1">3. 本次航班與交通規劃？</h4>
+                    <p class="text-xs text-slate-500 mb-4">決定班機延誤門檻與不便險權重。</p>
+                    <div class="space-y-3">
+                        <label onclick="selectWizardOption('flight', 'budget_airline')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">✈️⚡</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">搭乘廉價航空 / 轉機轉運</div>
+                                    <div class="text-[11px] text-slate-500">需要「班機延誤門檻低、賠付高」</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_flight" class="accent-blue-600">
+                        </label>
+                        <label onclick="selectWizardOption('flight', 'direct_regular')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🛫✨</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">傳統航空直飛</div>
+                                    <div class="text-[11px] text-slate-500">基礎不便險與行李保障即可</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_flight" class="accent-blue-600">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="wizard-step hidden" id="step4">
+                    <h4 class="font-bold text-slate-800 text-base sm:text-lg mb-1">4. 您最偏好或最擔心的風險類別？</h4>
+                    <p class="text-xs text-slate-500 mb-4">我們將為您做最終加權計算。</p>
+                    <div class="space-y-3">
+                        <label onclick="selectWizardOption('priority', 'inconvenience')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🧳⏰</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">不便險優先（班機延誤/改降/行李耽擱）</div>
+                                    <div class="text-[11px] text-slate-500">富邦、國泰等定額/累進高補償方案</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_prio" class="accent-blue-600">
+                        </label>
+                        <label onclick="selectWizardOption('priority', 'price')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">💰⚖️</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">CP 值優先（預算實惠、基本全包）</div>
+                                    <div class="text-[11px] text-slate-500">新安東京、中信等超值高實惠款</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_prio" class="accent-blue-600">
+                        </label>
+                        <label onclick="selectWizardOption('priority', 'medical')" class="wizard-option flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🏥🆘</span>
+                                <div>
+                                    <div class="font-bold text-sm text-slate-800">海外醫療與急難救援優先</div>
+                                    <div class="text-[11px] text-slate-500">安達、南山、台產等高額醫療保障</div>
+                                </div>
+                            </div>
+                            <input type="radio" name="q_prio" class="accent-blue-600">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Wizard Result -->
+                <div class="wizard-step hidden" id="wizardResult">
+                    <div class="text-center py-2 mb-4">
+                        <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-2 text-xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900">分析完成！適配度最高的 TOP 3 方案</h4>
+                        <p class="text-xs text-slate-500">依據您的目的地、成員與偏好計算</p>
+                    </div>
+
+                    <div id="top3Results" class="space-y-3">
+                        <!-- Dynamic Top 3 rendered here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                <button id="prevBtn" onclick="prevWizardStep()" class="text-xs font-semibold text-slate-500 hover:text-slate-800 px-3 py-2 hidden">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> 上一題
+                </button>
+                <div class="ml-auto">
+                    <button id="nextBtn" onclick="nextWizardStep()" disabled class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl transition-all">
+                        下一題 <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                    <button id="finishWizardBtn" onclick="closeWizard()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold px-5 py-2.5 rounded-xl transition-all hidden">
+                        回到列表觀看全部
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- 試算條件設定卡片 -->
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-      <h2 class="text-lg font-bold text-slate-800 border-b pb-3 mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-sliders text-blue-600"></i> 行程與保費試算條件
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-sm font-medium
+    <!-- Modal 2: Side-by-Side Comparison Table -->
+    <div id="compareModal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-6">
+        <div class="bg-white rounded-3xl max-w-6xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+            <!-- Header -->
+            <div class="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-base sm:text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-code-compare text-blue-400"></i> 多家保險方案橫向詳細規格對比
+                    </h3>
+                    <p class="text-xs text-slate-400">包含班機延誤、海外醫療、行李損失與直達投保連結</p>
+                </div>
+                <button onclick="closeCompareModal()" class="text-slate-400 hover:text-white text-xl p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Table -->
+            <div class="p-4 overflow-x-auto overflow-y-auto custom-scrollbar flex-grow">
+                <table class="w-full text-left border-collapse min-w-[700px]">
+                    <tbody id="compareTableBody" class="divide-y divide-slate-100 text-xs text-slate-700">
+                        <!-- Dynamic Comparison Rows -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+                <span>提示：最終條款與投保限制以各保險公司線上投保官網公告為準。</span>
+                <button onclick="closeCompareModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold px-4 py-2 rounded-xl">關閉對比表</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Detailed Terms Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div id="detailModalHeader" class="p-5 text-white flex items-center justify-between">
+                <!-- Dynamic Header -->
+            </div>
+            <div id="detailModalBody" class="p-6 overflow-y-auto custom-scrollbar text-xs space-y-4">
+                <!-- Dynamic Content -->
+            </div>
+            <div id="detailModalFooter" class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                <!-- Dynamic Footer with Apply Link -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // 8 Insurance Companies Master Dataset (Enhanced with Comprehensive Specs & Official Apply Links)
+        const insuranceData = [
+            {
+                id: 'fubon',
+                name: '富邦產險',
+                logoBadge: '富邦',
+                color: 'bg-blue-600',
+                rating: 4.8,
+                basePricePerDay: 130,
+                officialUrl: 'https://www.fubon.com/insurance/b2c/content/main/NewTitle.html',
+                specs: {
+                    accidentalDeath: '500 萬元',
+                    medicalCoverage: '100 萬元',
+                    hasCovid: true,
+                    delayThreshold: '4 小時',
+                    delayPayout: '6,000 元 (定額給付)',
+                    luggageDelay: '6,000 元 (滿6小時)',
+                    luggageLoss: '5,000 元',
+                    personalBelongings: '10,000 元 (定額/實支)',
+                    rescueLimit: '200 萬元 (含救援專機)',
+                    liability: '50 萬元 (無自負額)'
+                },
+                tags: ['不便險首選', '延誤賠付高', '緊急救援佳'],
+                pros: '班機延誤門檻僅 4 小時即賠付 6,000 元，海外急難救援額度高達 200 萬，涵蓋海外緊急專機運送。',
+                cons: '保費略高於市場平均，線上投保年齡與投保身份查核較嚴格。',
+                scores: { japan_korea: 9, europe_america: 9, budget_airline: 10, price: 6, medical: 9 }
+            },
+            {
+                id: 'cathay',
+                name: '國泰產險',
+                logoBadge: '國泰',
+                color: 'bg-emerald-600',
+                rating: 4.7,
+                basePricePerDay: 115,
+                officialUrl: 'https://www.cathayholdings.com/insurance/B2C/index.html',
+                specs: {
+                    accidentalDeath: '500 萬元',
+                    medicalCoverage: '100 萬元',
+                    hasCovid: true, // 可自由選甲/乙型
+                    delayThreshold: '4 小時',
+                    delayPayout: '5,000 元 (滿4hr定額,可累進)',
+                    luggageDelay: '5,000 元 (滿4小時)',
+                    luggageLoss: '5,000 元',
+                    personalBelongings: '8,000 元',
+                    rescueLimit: '150 萬元',
+                    liability: '40 萬元'
+                },
+                tags: ['線上體驗佳', '可自由選法傳', '理賠效率高'],
+                pros: '可自由選擇是否投保「法定傳染病」（若選擇不含可省保費）；國泰線上投保流程與理賠服務滿意度高。',
+                cons: '若選擇含法定傳染病的方案，部分海外突發疾病醫療保額會打折計算。',
+                scores: { japan_korea: 9, europe_america: 8, budget_airline: 8, price: 8, medical: 8 }
+            },
+            {
+                id: 'shinang',
+                name: '新安東京海上產險',
+                logoBadge: '新安',
+                color: 'bg-amber-600',
+                rating: 4.6,
+                basePricePerDay: 85,
+                officialUrl: 'https://www.tmnewa.com.tw/b2c/',
+                specs: {
+                    accidentalDeath: '300 萬元',
+                    medicalCoverage: '50 萬元',
+                    hasCovid: false,
+                    delayThreshold: '4 小時',
+                    delayPayout: '3,000 元 (定額給付)',
+                    luggageDelay: '3,000 元 (滿6小時)',
+                    luggageLoss: '3,000 元',
+                    personalBelongings: '5,000 元',
+                    rescueLimit: '100 萬元',
+                    liability: '30 萬元'
+                },
+                tags: ['CP值爆棚', '小資自由行', '保費超親民'],
+                pros: '保費全市場最具競爭力之一，適合預算有限、追求基礎防護的小資族與短程亞洲行。',
+                cons: '海外突發疾病與急難救助額度較屬基本款，無包含法定傳染病。',
+                scores: { japan_korea: 8, europe_america: 6, budget_airline: 7, price: 10, medical: 6 }
+            },
+            {
+                id: 'chubb',
+                name: '安達產險 (Chubb)',
+                logoBadge: '安達',
+                color: 'bg-indigo-600',
+                rating: 4.7,
+                basePricePerDay: 125,
+                officialUrl: 'https://www.chubb.com/tw-zh/',
+                specs: {
+                    accidentalDeath: '500 萬元',
+                    medicalCoverage: '150 萬元 (日韓1.5倍加碼)',
+                    hasCovid: true,
+                    delayThreshold: '4 小時',
+                    delayPayout: '4,000 元 (定額給付)',
+                    luggageDelay: '4,000 元 (滿4小時)',
+                    luggageLoss: '5,000 元',
+                    personalBelongings: '10,000 元',
+                    rescueLimit: '200 萬元 (外商救援網絡)',
+                    liability: '50 萬元'
+                },
+                tags: ['日韓醫療升級', '外商救援強', '含法定傳染病'],
+                pros: '前往日本、韓國等指定熱門國家，海外突發疾病醫療保額自動提升 1.5 倍；外商救援資源扎實。',
+                cons: '國內線上投保入口較分散，不便險細部條款限制較為嚴謹。',
+                scores: { japan_korea: 10, europe_america: 9, budget_airline: 7, price: 7, medical: 10 }
+            },
+            {
+                id: 'taiwan',
+                name: '台灣產險',
+                logoBadge: '台產',
+                color: 'bg-red-600',
+                rating: 4.5,
+                basePricePerDay: 100,
+                officialUrl: 'https://www.tfmi.com.tw/',
+                specs: {
+                    accidentalDeath: '500 萬元',
+                    medicalCoverage: '80 萬元',
+                    hasCovid: true,
+                    delayThreshold: '4 小時',
+                    delayPayout: '3,500 元',
+                    luggageDelay: '3,500 元 (滿6小時)',
+                    luggageLoss: '4,000 元',
+                    personalBelongings: '8,000 元',
+                    rescueLimit: '150 萬元',
+                    liability: '100 萬元 (高額個人責任險)'
+                },
+                tags: ['高額責任險', '自駕遊推薦', '保障全面'],
+                pros: '個人責任險額度高達 100 萬元（無自負額），適合在國外租車自駕或擔心造成他人財損的旅客。',
+                cons: '線上投保介面設計較傳統，推廣活動較少。',
+                scores: { japan_korea: 7, europe_america: 8, budget_airline: 6, price: 8, medical: 8 }
+            },
+            {
+                id: 'ctbc',
+                name: '中信產險',
+                logoBadge: '中信',
+                color: 'bg-teal-600',
+                rating: 4.5,
+                basePricePerDay: 90,
+                officialUrl: 'https://www.ctbcins.com/',
+                specs: {
+                    accidentalDeath: '400 萬元',
+                    medicalCoverage: '60 萬元',
+                    hasCovid: false,
+                    delayThreshold: '4 小時',
+                    delayPayout: '3,000 元',
+                    luggageDelay: '3,000 元 (滿6小時)',
+                    luggageLoss: '3,000 元',
+                    personalBelongings: '12,000 元 (隨身財物加碼)',
+                    rescueLimit: '100 萬元',
+                    liability: '30 萬元'
+                },
+                tags: ['財物失竊防護', '重大燒燙傷', '實惠組合'],
+                pros: '特有「隨身財物失竊/盜搶」給付額度較高，並包含重大燒燙傷特別給付。',
+                cons: '海外突發疾病與救援上限較中規中矩，不包含新冠法傳。',
+                scores: { japan_korea: 8, europe_america: 6, budget_airline: 7, price: 9, medical: 7 }
+            },
+            {
+                id: 'nanshan',
+                name: '南山產險',
+                logoBadge: '南山',
+                color: 'bg-cyan-600',
+                rating: 4.6,
+                basePricePerDay: 110,
+                officialUrl: 'https://www.nanshangeneral.com.tw/',
+                specs: {
+                    accidentalDeath: '500 萬元',
+                    medicalCoverage: '100 萬元',
+                    hasCovid: true,
+                    delayThreshold: '6 小時',
+                    delayPayout: '4,000 元',
+                    luggageDelay: '4,000 元 (滿6小時)',
+                    luggageLoss: '5,000 元',
+                    personalBelongings: '8,000 元',
+                    rescueLimit: '200 萬元 (含醫療運送)',
+                    liability: '40 萬元'
+                },
+                tags: ['長輩家族首選', '海外救援強', '返國住院保障'],
+                pros: '海外突發疾病與返國後延續住院給付明確，救援運送額度高，非常適合全家大小或帶長輩出國。',
+                cons: '班機延誤門檻需滿 6 小時才開始給付（多數為 4 小時）。',
+                scores: { japan_korea: 8, europe_america: 9, budget_airline: 5, price: 7, medical: 9 }
+            },
+            {
+                id: 'mingtai',
+                name: '明台產險',
+                logoBadge: '明台',
+                color: 'bg-rose-600',
+                rating: 4.6,
+                basePricePerDay: 105,
+                officialUrl: 'https://www.mingtai.com.tw/',
+                specs: {
+                    accidentalDeath: '500 萬元',
+                    medicalCoverage: '80 萬元',
+                    hasCovid: true,
+                    delayThreshold: '4 小時',
+                    delayPayout: '4,000 元',
+                    luggageDelay: '4,000 元 (滿4小時)',
+                    luggageLoss: '4,000 元',
+                    personalBelongings: '8,000 元',
+                    rescueLimit: '150 萬元 (日資集團救援)',
+                    liability: '40 萬元'
+                },
+                tags: ['日資背景', '日本旅遊推薦', '理賠機制熟'],
+                pros: '母公司為日本 MS&AD 集團，日本在地醫療機構與救援資源豐富，不便險理賠機制成熟。',
+                cons: '線上投保試算介面步驟相對較多。',
+                scores: { japan_korea: 10, europe_america: 7, budget_airline: 8, price: 8, medical: 8 }
+            }
+        ];
+
+        // App State
+        let selectedCompareIds = [];
+        let wizardAnswers = { destination: '', member: '', flight: '', priority: '' };
+        let currentWizardStep = 1;
+
+        // Initialize App
+        window.onload = function() {
+            renderCards(insuranceData);
+        };
+
+        // Render Insurance Cards with Apply Link & Detail Modal Trigger
+        function renderCards(data) {
+            const grid = document.getElementById('insuranceGrid');
+            const days = parseInt(document.getElementById('filterDays').value) || 5;
+
+            grid.innerHTML = data.map(item => {
+                const estimatedPrice = Math.round(item.basePricePerDay * days * (days > 7 ? 0.85 : 1));
+                const isChecked = selectedCompareIds.includes(item.id);
+
+                return `
+                <div class="glass-card rounded-3xl p-5 flex flex-col justify-between hover:shadow-xl transition-all duration-300 relative border ${isChecked ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200/90'}">
+                    <div>
+                        <!-- Header / Company -->
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-10 h-10 rounded-2xl ${item.color} text-white font-black flex items-center justify-center text-xs shadow-md">
+                                    ${item.logoBadge}
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-slate-900 text-base leading-tight">${item.name}</h4>
+                                    <div class="flex items-center text-xs text-amber-500 mt-0.5">
+                                        <i class="fa-solid fa-star text-[10px] mr-1"></i>
+                                        <span class="font-bold text-slate-700">${item.rating}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Compare Checkbox -->
+                            <label class="flex items-center gap-1 cursor-pointer bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-xl transition-colors">
+                                <input type="checkbox" onchange="toggleCompare('${item.id}')" ${isChecked ? 'checked' : ''} class="w-3.5 h-3.5 rounded text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                <span class="text-[11px] font-bold text-slate-600">對比</span>
+                            </label>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="flex flex-wrap gap-1 mb-3.5">
+                            ${item.tags.map(tag => `<span class="bg-blue-50 text-blue-700 border border-blue-200/50 text-[10px] font-bold px-2 py-0.5 rounded-md">${tag}</span>`).join('')}
+                        </div>
+
+                        <!-- Key Specs List -->
+                        <div class="space-y-2 mb-4 text-xs bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500 font-medium"><i class="fa-solid fa-plane-circle-exclamation text-slate-400 mr-1.5"></i>班機延誤門檻</span>
+                                <span class="font-bold text-slate-800">${item.specs.delayThreshold}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500 font-medium"><i class="fa-solid fa-hand-holding-dollar text-slate-400 mr-1.5"></i>延誤理賠金額</span>
+                                <span class="font-extrabold text-blue-600">${item.specs.delayPayout}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500 font-medium"><i class="fa-solid fa-user-nurse text-slate-400 mr-1.5"></i>海外突發醫療</span>
+                                <span class="font-bold text-slate-800">${item.specs.medicalCoverage}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-500 font-medium"><i class="fa-solid fa-shield-virus text-slate-400 mr-1.5"></i>含法定傳染病</span>
+                                <span class="font-bold ${item.specs.hasCovid ? 'text-green-600' : 'text-slate-400'}">
+                                    ${item.specs.hasCovid ? '<i class="fa-solid fa-check mr-1"></i>有涵蓋' : '無涵蓋'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Detail Modal Link Trigger -->
+                        <button onclick="openDetailModal('${item.id}')" class="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1 mb-4 group">
+                            <span>查看完整條款與給付細節</span>
+                            <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-0.5 transition-transform"></i>
+                        </button>
+                    </div>
+
+                    <!-- Footer / Price & Apply -->
+                    <div class="pt-3 border-t border-slate-100 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-400 font-medium">${days} 天預估參考保費</span>
+                            <span class="text-lg font-black text-slate-900">NT$ ${estimatedPrice}</span>
+                        </div>
+                        
+                        <!-- Official Apply Button -->
+                        <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs py-2.5 rounded-xl transition-all shadow-md shadow-blue-500/15 flex items-center justify-center gap-1.5">
+                            <span>前往線上投保官網</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Open Detail Modal
+        function openDetailModal(id) {
+            const item = insuranceData.find(i => i.id === id);
+            if (!item) return;
+
+            const header = document.getElementById('detailModalHeader');
+            const body = document.getElementById('detailModalBody');
+            const footer = document.getElementById('detailModalFooter');
+
+            header.className = `p-5 ${item.color} text-white flex items-center justify-between`;
+            header.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-base">
+                        ${item.logoBadge}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg leading-tight">${item.name}</h3>
+                        <p class="text-xs text-white/80">詳細保障條款與給付額度清單</p>
+                    </div>
+                </div>
+                <button onclick="closeDetailModal()" class="text-white/80 hover:text-white text-xl p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            `;
+
+            body.innerHTML = `
+                <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-4">
+                    <h5 class="font-bold text-slate-800 text-sm mb-1"><i class="fa-solid fa-circle-info text-blue-600 mr-1.5"></i>特色與定位總覽</h5>
+                    <p class="text-slate-600 leading-relaxed mb-2">${item.pros}</p>
+                    <p class="text-slate-500 leading-relaxed"><strong class="text-slate-700">留意點：</strong>${item.cons}</p>
+                </div>
+
+                <h5 class="font-bold text-slate-900 text-sm pt-2"><i class="fa-solid fa-list-check text-blue-600 mr-1.5"></i>各項保障給付額度細節</h5>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">傷害身故 / 失能保額</span>
+                        <strong class="text-slate-800 text-sm">${item.specs.accidentalDeath}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">海外突發疾病醫療保額</span>
+                        <strong class="text-blue-600 text-sm">${item.specs.medicalCoverage}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">班機延誤門檻與給付</span>
+                        <strong class="text-slate-800 text-sm">${item.specs.delayThreshold} (${item.specs.delayPayout})</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">行李延誤給付</span>
+                        <strong class="text-slate-800 text-sm">${item.specs.luggageDelay}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">行李損失 / 隨身財物給付</span>
+                        <strong class="text-slate-800 text-sm">${item.specs.luggageLoss} / ${item.specs.personalBelongings}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">海外急難救助與救援專機</span>
+                        <strong class="text-slate-800 text-sm">${item.specs.rescueLimit}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">個人海外責任險上限</span>
+                        <strong class="text-slate-800 text-sm">${item.specs.liability}</strong>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                        <span class="text-slate-500 block text-[11px]">包含法定傳染病 (新冠/登革熱)</span>
+                        <strong class="${item.specs.hasCovid ? 'text-green-600' : 'text-slate-400'} text-sm">${item.specs.hasCovid ? '包含' : '不含'}</strong>
+                    </div>
+                </div>
+            `;
+
+            footer.innerHTML = `
+                <button onclick="closeDetailModal()" class="text-slate-600 font-semibold px-4 py-2 hover:bg-slate-200 rounded-xl">關閉</button>
+                <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all flex items-center gap-1.5">
+                    <span>前往 ${item.name} 官網投保</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                </a>
+            `;
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        // Filter Functionality
+        function applyFilters() {
+            const covidRequired = document.getElementById('filterCovid').checked;
+            const medicalFilter = document.getElementById('filterMedical').value;
+
+            let filtered = insuranceData.filter(item => {
+                if (covidRequired && !item.specs.hasCovid) return false;
+                if (medicalFilter === 'high') {
+                    const num = parseInt(item.specs.medicalCoverage);
+                    if (num < 100) return false;
+                } else if (medicalFilter === 'medium') {
+                    const num = parseInt(item.specs.medicalCoverage);
+                    if (num < 50) return false;
+                }
+                return true;
+            });
+
+            renderCards(filtered);
+        }
+
+        function updateDays(val) {
+            document.getElementById('daysDisplay').innerText = `${val} 天`;
+            applyFilters();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterRegion').value = 'japan_korea';
+            document.getElementById('filterDays').value = 5;
+            document.getElementById('daysDisplay').innerText = '5 天';
+            document.getElementById('filterCovid').checked = false;
+            document.getElementById('filterMedical').value = 'all';
+            document.getElementById('sortBy').value = 'recommended';
+            renderCards(insuranceData);
+        }
+
+        function sortInsurance() {
+            const sortBy = document.getElementById('sortBy').value;
+            let sorted = [...insuranceData];
+
+            if (sortBy === 'price_asc') {
+                const days = parseInt(document.getElementById('filterDays').value) || 5;
+                sorted.sort((a, b) => (a.basePricePerDay * days) - (b.basePricePerDay * days));
+            } else if (sortBy === 'medical_desc') {
+                sorted.sort((a, b) => parseInt(b.specs.medicalCoverage) - parseInt(a.specs.medicalCoverage));
+            } else if (sortBy === 'delay_desc') {
+                sorted.sort((a, b) => parseInt(b.specs.delayPayout.replace(/,/g, '')) - parseInt(a.specs.delayPayout.replace(/,/g, '')));
+            }
+            renderCards(sorted);
+        }
+
+        // Comparison Logic
+        function toggleCompare(id) {
+            if (selectedCompareIds.includes(id)) {
+                selectedCompareIds = selectedCompareIds.filter(i => i !== id);
+            } else {
+                if (selectedCompareIds.length >= 4) {
+                    alert('最多只能勾選 4 家產險公司進行對比！');
+                    return;
+                }
+                selectedCompareIds.push(id);
+            }
+            updateCompareBar();
+            applyFilters();
+        }
+
+        function updateCompareBar() {
+            const bar = document.getElementById('floatingCompareBar');
+            const count = selectedCompareIds.length;
+            document.getElementById('selectedCount').innerText = count;
+            document.getElementById('compareCountBadge').innerText = count;
+
+            if (count > 0) {
+                bar.classList.remove('translate-y-full');
+            } else {
+                bar.classList.add('translate-y-full');
+            }
+        }
+
+        function clearCompareList() {
+            selectedCompareIds = [];
+            updateCompareBar();
+            applyFilters();
+        }
+
+        // Render Comparison Table with Official Apply Links
+        function openCompareModal() {
+            if (selectedCompareIds.length === 0) {
+                alert('請先在方案卡片上勾選至少 1 個保險公司以進行對比！');
+                return;
+            }
+
+            const items = insuranceData.filter(i => selectedCompareIds.includes(i.id));
+            const days = parseInt(document.getElementById('filterDays').value) || 5;
+            const tableBody = document.getElementById('compareTableBody');
+
+            const rows = [
+                { label: '預估參考總保費', getKey: item => `<span class="font-extrabold text-blue-600 text-sm">NT$ ${Math.round(item.basePricePerDay * days)}</span>` },
+                { label: '傷害身故/失能額度', getKey: item => item.specs.accidentalDeath },
+                { label: '海外突發疾病醫療', getKey: item => `<span class="font-bold text-slate-800">${item.specs.medicalCoverage}</span>` },
+                { label: '包含法定傳染病', getKey: item => item.specs.hasCovid ? '<span class="text-green-600 font-bold"><i class="fa-solid fa-check"></i> 有涵蓋</span>' : '<span class="text-slate-400">無涵蓋</span>' },
+                { label: '班機延誤門檻', getKey: item => item.specs.delayThreshold },
+                { label: '班機延誤給付額', getKey: item => `<span class="font-bold text-blue-600">${item.specs.delayPayout}</span>` },
+                { label: '行李延誤給付', getKey: item => item.specs.luggageDelay },
+                { label: '行李損失 / 隨身財物', getKey: item => `${item.specs.luggageLoss} / ${item.specs.personalBelongings}` },
+                { label: '海外急難救援專機', getKey: item => item.specs.rescueLimit },
+                { label: '個人海外責任險', getKey: item => item.specs.liability },
+                { label: '官網線上投保連結', getKey: item => `<a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] px-3 py-1.5 rounded-lg inline-flex items-center gap-1 shadow-sm">投保官網 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>` }
+            ];
+
+            let html = '';
+
+            // Header Row
+            html += `<tr class="border-b border-slate-200 bg-slate-50">
+                <td class="p-3.5 font-bold text-slate-700 sticky left-0 bg-slate-50 z-10 w-44">保險公司項目</td>
+                ${items.map(item => `
+                    <td class="p-3.5 text-center min-w-[170px]">
+                        <div class="font-extrabold text-slate-900 text-sm">${item.name}</div>
+                        <div class="text-[10px] text-blue-600 font-semibold">${item.tags[0]}</div>
+                    </td>
+                `).join('')}
+            </tr>`;
+
+            // Data Rows
+            rows.forEach(row => {
+                html += `<tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="p-3.5 font-bold text-slate-600 sticky left-0 bg-white z-10 border-r border-slate-100">${row.label}</td>
+                    ${items.map(item => `
+                        <td class="p-3.5 text-center border-r border-slate-100 last:border-none">${row.getKey(item)}</td>
+                    `).join('')}
+                </tr>`;
+            });
+
+            tableBody.innerHTML = html;
+            document.getElementById('compareModal').classList.remove('hidden');
+        }
+
+        function closeCompareModal() {
+            document.getElementById('compareModal').classList.add('hidden');
+        }
+
+        // Recommendation Wizard Logic
+        function openWizard() {
+            currentWizardStep = 1;
+            wizardAnswers = { destination: '', member: '', flight: '', priority: '' };
+            updateWizardView();
+            document.getElementById('wizardModal').classList.remove('hidden');
+        }
+
+        function closeWizard() {
+            document.getElementById('wizardModal').classList.add('hidden');
+        }
+
+        function selectWizardOption(category, value) {
+            wizardAnswers[category] = value;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextWizardStep() {
+            if (currentWizardStep < 4) {
+                currentWizardStep++;
+                updateWizardView();
+            } else if (currentWizardStep === 4) {
+                calculateWizardResults();
+            }
+        }
+
+        function prevWizardStep() {
+            if (currentWizardStep > 1) {
+                currentWizardStep--;
+                updateWizardView();
+            }
+        }
+
+        function updateWizardView() {
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).classList.add('hidden');
+            }
+            document.getElementById('wizardResult').classList.add('hidden');
+            document.getElementById(`step${currentWizardStep}`).classList.remove('hidden');
+
+            document.getElementById('wizardProgress').style.width = `${(currentWizardStep / 4) * 100}%`;
+
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishWizardBtn');
+
+            prevBtn.classList.toggle('hidden', currentWizardStep === 1);
+            nextBtn.classList.remove('hidden');
+            finishBtn.classList.add('hidden');
+
+            const currentCat = ['destination', 'member', 'flight', 'priority'][currentWizardStep - 1];
+            nextBtn.disabled = !wizardAnswers[currentCat];
+            nextBtn.innerText = currentWizardStep === 4 ? '查看分析結果' : '下一題';
+        }
+
+        function calculateWizardResults() {
+            currentWizardStep = 5;
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('wizardResult').classList.remove('hidden');
+            document.getElementById('wizardProgress').style.width = '100%';
+
+            document.getElementById('prevBtn').classList.add('hidden');
+            document.getElementById('nextBtn').classList.add('hidden');
+            document.getElementById('finishWizardBtn').classList.remove('hidden');
+
+            let scored = insuranceData.map(item => {
+                let score = 0;
+                let reason = '';
+
+                if (wizardAnswers.destination === 'japan_korea' && item.scores.japan_korea >= 9) {
+                    score += 30;
+                    reason = '日韓海外醫療與急難救援升級加碼';
+                } else if (wizardAnswers.destination === 'europe_america' && item.scores.europe_america >= 9) {
+                    score += 30;
+                    reason = '高額海外醫療與急難專機運送';
+                } else {
+                    score += 20;
+                }
+
+                if (wizardAnswers.flight === 'budget_airline' && item.scores.budget_airline >= 8) {
+                    score += 30;
+                    reason = reason || '班機延誤理賠門檻低且金額高';
+                }
+
+                if (wizardAnswers.priority === 'price' && item.scores.price >= 9) {
+                    score += 40;
+                    reason = reason || '保費超親民，CP 值最高首選';
+                } else if (wizardAnswers.priority === 'inconvenience' && item.scores.budget_airline >= 9) {
+                    score += 40;
+                    reason = reason || '不便險保障完整，班機與行李給付高';
+                } else if (wizardAnswers.priority === 'medical' && item.scores.medical >= 9) {
+                    score += 40;
+                    reason = reason || '海外醫療給付額高，涵蓋法定傳染病';
+                }
+
+                return { ...item, finalScore: score, recommendReason: reason || '綜合保障與評分優良' };
+            });
+
+            scored.sort((a, b) => b.finalScore - a.finalScore);
+            const top3 = scored.slice(0, 3);
+
+            const top3Container = document.getElementById('top3Results');
+            top3Container.innerHTML = top3.map((item, index) => `
+                <div class="p-4 rounded-2xl border ${index === 0 ? 'border-amber-400 bg-amber-50/50 ring-2 ring-amber-400/20' : 'border-slate-200 bg-white'} relative">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full ${index === 0 ? 'bg-amber-500 text-white' : 'bg-slate-200 text-slate-700'} text-xs font-black flex items-center justify-center">
+                                ${index + 1}
+                            </span>
+                            <h5 class="font-extrabold text-slate-900">${item.name}</h5>
+                        </div>
+                        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-md">匹配度 ${Math.min(99, 88 + (3 - index) * 4)}%</span>
+                    </div>
+                    <p class="text-xs text-slate-600 mb-3">
+                        <strong class="text-slate-800">首選理由：</strong>${item.recommendReason}
+                    </p>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <span class="text-[11px] text-slate-500">班機延誤: <strong>${item.specs.delayPayout}</strong></span>
+                        <a href="${item.officialUrl}" target="_blank" rel="noopener noreferrer" class="bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+                            前往官網投保 <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
