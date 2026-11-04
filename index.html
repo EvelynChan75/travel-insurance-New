@@ -1,243 +1,574 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>國外旅遊不便險與旅平險試算比較</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>海外旅平險與不便險 評比試算 Web App (2026 Q4 版)</title>
+    <style>
+        /* Reset & Basic Base Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: #f3f4f6; color: #1f2937; padding-bottom: 60px; line-height: 1.5; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
+
+        /* Header UI */
+        header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 32px 0 24px; margin-bottom: 24px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .badge { background-color: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 9999px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header-title h1 { font-size: 28px; font-weight: 800; margin: 8px 0 4px; }
+        .header-title p { color: #dbeafe; font-size: 14px; }
+        .header-stats { display: flex; gap: 12px; }
+        .stat-box { background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 10px 18px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.2); }
+        .stat-box .val { font-size: 18px; font-weight: 700; }
+        .stat-box .lbl { font-size: 11px; color: #bfdbfe; }
+
+        /* Control Panel Form */
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px; border: 1px solid #e5e7eb; }
+        .card-title { font-size: 18px; font-weight: 700; color: #111827; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .card-title .icon-bg { width: 28px; height: 28px; background-color: #eff6ff; color: #2563eb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; }
+
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 14px; font-weight: 600; color: #374151; display: flex; justify-content: space-between; }
+        .form-group select, .form-group input[type="range"] { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d5db; background-color: white; font-size: 14px; outline: none; }
+        .form-group select:focus { border-color: #2563eb; ring: 2px #bfdbfe; }
+        .range-value { font-weight: 700; color: #2563eb; background: #eff6ff; padding: 2px 10px; border-radius: 12px; }
+        .checkbox-group { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px dashed #e5e7eb; }
+        .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #4b5563; cursor: pointer; }
+        .checkbox-item input { width: 16px; height: 16px; accent-color: #2563eb; }
+
+        /* Scenario Tags */
+        .tags-wrapper { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+        .tag-label { font-size: 13px; font-weight: 600; color: #6b7280; margin-right: 4px; }
+        .tag-btn { background: white; border: 1px solid #d1d5db; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+        .tag-btn:hover { background: #f9fafb; border-color: #9ca3af; }
+        .tag-btn.active { background: #1e40af; color: white; border-color: #1e40af; font-weight: 600; }
+
+        /* Comparison Table */
+        .table-container { overflow-x: auto; background: white; border-radius: 16px; border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 900px; }
+        th, td { padding: 16px; border-bottom: 1px solid #f3f4f6; font-size: 14px; vertical-align: middle; }
+        th { background: #f9fafb; font-weight: 700; color: #374151; position: sticky; top: 0; z-index: 10; }
+        tr:hover { background-color: #f8fafc; }
+        tr.pinned { background-color: #eff6ff; }
+        
+        .company-info { display: flex; flex-direction: column; }
+        .company-name { font-weight: 700; font-size: 16px; color: #111827; display: flex; align-items: center; gap: 6px; }
+        .company-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+        
+        .price-tag { font-size: 20px; font-weight: 800; color: #2563eb; }
+
+        .tag-pill { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 4px; }
+        .pill-green { background-color: #d1fae5; color: #065f46; }
+        .pill-blue { background-color: #dbeafe; color: #1e40af; }
+        .pill-yellow { background-color: #fef3c7; color: #92400e; }
+        .pill-gray { background-color: #f3f4f6; color: #4b5563; }
+
+        /* Action Buttons */
+        .btn-group { display: flex; gap: 8px; }
+        .btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s; }
+        .btn-primary { background-color: #2563eb; color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-outline { background-color: white; border: 1px solid #d1d5db; color: #374151; }
+        .btn-outline:hover { background-color: #f3f4f6; }
+        .pin-btn { background: none; border: none; cursor: pointer; color: #9ca3af; padding: 4px; }
+        .pin-btn.active { color: #2563eb; }
+
+        /* Modal Popup */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 16px; }
+        .modal-overlay.open { display: flex; }
+        .modal-card { background: white; border-radius: 20px; max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
+        .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; }
+        .modal-close { background: #f3f4f6; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 16px; font-weight: bold; color: #4b5563; }
+        .modal-section { margin-bottom: 20px; }
+        .modal-section-title { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+        .feature-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .feature-list li { font-size: 14px; color: #4b5563; display: flex; align-items: flex-start; gap: 8px; }
+        .feature-list li::before { content: "✓"; color: #10b981; font-weight: bold; }
+        .cons-list li::before { content: "✕"; color: #ef4444; font-weight: bold; }
+
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; align-items: flex-start; }
+            .filter-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen pb-12">
+<body>
 
-  <!-- Header -->
-  <header class="bg-blue-700 text-white shadow-md sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <i class="fa-solid fa-plane-departure text-2xl text-yellow-300"></i>
-        <h1 class="text-xl font-bold tracking-wide">海外旅遊險試算與比較工具</h1>
-      </div>
+    <!-- Header Section -->
+    <header>
+        <div class="container header-content">
+            <div class="header-title">
+                <span class="badge">2026 Q4 最新版本</span>
+                <h1>海外旅平險與不便險 評比試算 Web App</h1>
+                <p>精選 8 大知名產險公司，專為國人出國旅遊打造的智慧比較與保費估算工具</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat-box">
+                    <div class="val">8 家</div>
+                    <div class="lbl">收錄保險公司</div>
+                </div>
+                <div class="stat-box">
+                    <div class="val">2026 Q4</div>
+                    <div class="lbl">更新時間</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Input & Filter Control Panel -->
+        <div class="card">
+            <div class="card-title">
+                <div class="icon-bg">1</div>
+                行程條件與試算參數設定
+            </div>
+            
+            <div class="filter-grid">
+                <!-- Travel Days Slider -->
+                <div class="form-group">
+                    <label>
+                        旅遊天數
+                        <span class="range-value" id="daysValue">4 天</span>
+                    </label>
+                    <input type="range" id="travelDays" min="1" max="30" value="4">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #9ca3af; margin-top: 2px;">
+                        <span>1天</span>
+                        <span>15天</span>
+                        <span>30天</span>
+                    </div>
+                </div>
+
+                <!-- Main Coverage Selection -->
+                <div class="form-group">
+                    <label>主約意外保額</label>
+                    <select id="mainCoverage">
+                        <option value="200">200 萬 (經濟基礎型)</option>
+                        <option value="500" selected>500 萬 (標準推薦款)</option>
+                        <option value="1000">1000 萬 (頂級尊榮型)</option>
+                    </select>
+                </div>
+
+                <!-- Age Category -->
+                <div class="form-group">
+                    <label>被保人年齡層</label>
+                    <select id="ageGroup">
+                        <option value="adult" selected>成人 (20 - 64 歲)</option>
+                        <option value="child">孩童/青少年 (未滿20歲)</option>
+                        <option value="senior">長者 (65 歲以上)</option>
+                    </select>
+                </div>
+
+                <!-- Destination -->
+                <div class="form-group">
+                    <label>旅遊目的地</label>
+                    <select id="destination">
+                        <option value="japan_korea" selected>日韓專區 (安達享加碼/明台強項)</option>
+                        <option value="asia">東南亞 / 中港澳</option>
+                        <option value="europe_usa">歐美 / 紐澳 (醫療需求高)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Extra Checkbox Preferences -->
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="prefCovid"> 需含「法定傳染病」（新冠/流感）
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="prefFlightDelay"> 偏好高額「班機延誤給付」
+                </label>
+            </div>
+        </div>
+
+        <!-- Scenario Quick Filter Tags -->
+        <div class="tags-wrapper">
+            <span class="tag-label">熱門情境篩選：</span>
+            <button class="tag-btn active" onclick="filterScenario('all', this)">全部 (8家)</button>
+            <button class="tag-btn" onclick="filterScenario('cp', this)">💡 CP值高/小資首選</button>
+            <button class="tag-btn" onclick="filterScenario('delay', this)">✈️ 理賠最高/不便險強</button>
+            <button class="tag-btn" onclick="filterScenario('japan', this)">🌸 日韓神卡/專屬加碼</button>
+            <button class="tag-btn" onclick="filterScenario('senior', this)">👵 帶長輩/醫療救助高</button>
+        </div>
+
+        <!-- Dynamic Comparison Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 220px;">保險公司 / 項目</th>
+                        <th style="width: 140px;">保費預估 <br><span style="font-size:11px; font-weight:normal; color:#6b7280;">(依選取條件動態計算)*</span></th>
+                        <th>意外身故/失能</th>
+                        <th>海外突發疾病醫療</th>
+                        <th>班機延誤 (不便險)</th>
+                        <th>行李延誤/損失</th>
+                        <th>法定傳染病保障</th>
+                        <th>海外緊急救援</th>
+                        <th style="width: 150px;">線上投保 / 詳細</th>
+                    </tr>
+                </thead>
+                <tbody id="insuranceTableBody">
+                    <!-- JavaScript Output Target -->
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size: 12px; color: #6b7280; margin-top: 10px; text-align: right;">* 試算結果包含傷害醫療、海外突發疾病及不便險附加條款，實際保費與保額請依各保險公司官網最後投保勾選為準。</p>
     </div>
-  </header>
 
-  <main class="max-w-6xl mx-auto px-4 mt-6 space-y-6">
-
-    <!-- 試算條件設定卡片 -->
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-      <h2 class="text-lg font-bold text-slate-800 border-b pb-3 mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-sliders text-blue-600"></i> 行程與保費試算條件
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-600 mb-1">旅遊目的地</label>
-          <select id="region" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none" onchange="calculateApp()">
-            <option value="asia">日本 / 韓國 / 東南亞</option>
-            <option value="europe">歐洲 / 紐澳</option>
-            <option value="america">美國 / 加拿大</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-600 mb-1">旅遊天數（1-30天）</label>
-          <input type="number" id="days" value="4" min="1" max="30" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none" onchange="calculateApp()" oninput="calculateApp()">
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-slate-600 mb-1">保障方案等級</label>
-          <select id="planLevel" class="w-full border border-slate-300 rounded-lg p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none" onchange="calculateApp()">
-            <option value="basic">小資輕量型（旅平身故 300萬）</option>
-            <option value="standard" selected>超值標準型（旅平身故 500萬）</option>
-            <option value="premium">高額全包型（旅平身故 1000萬）</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
-    <!-- 方案比較卡片區 -->
-    <section class="space-y-4">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-shield-halved text-blue-600"></i> 各家產險保障與預估保費
-        </h2>
-        <span class="text-xs text-slate-500">*實際保費與保障內容以各產險公司投保當下條款為準</span>
-      </div>
-
-      <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- JS 動態生成產險卡片 -->
-      </div>
-    </section>
-
-    <!-- 比較總表 -->
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 overflow-hidden">
-      <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-table-list text-blue-600"></i> 核心保障理賠比較一覽表
-      </h2>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-slate-600 border-collapse">
-          <thead class="bg-slate-100 text-slate-700 font-semibold border-b">
-            <tr>
-              <th class="p-3">產險公司</th>
-              <th class="p-3">預估保費</th>
-              <th class="p-3">班機延誤理賠</th>
-              <th class="p-3">行程變更 / 取消</th>
-              <th class="p-3">行李延誤</th>
-              <th class="p-3">特定地區突發疾病</th>
-              <th class="p-3">官方線上投保連結</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody" class="divide-y divide-slate-100">
-            <!-- JS 動態生成表格欄位 -->
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- 理賠管道說明 -->
-    <section class="bg-blue-50 border border-blue-200 rounded-xl p-5">
-      <h3 class="font-bold text-blue-900 text-base mb-2 flex items-center gap-2">
-        <i class="fa-solid fa-circle-info text-blue-600"></i> 理賠申請必備文件與管道叮嚀
-      </h3>
-      <ul class="list-disc list-inside text-sm text-blue-800 space-y-1">
-        <li><strong>班機延誤</strong>：請務必保留「登機證正本」與航空公司開立之「班機延誤證明」（臺灣產物若預先登錄航班可免開證明主動簡訊申請）。</li>
-        <li><strong>行李延誤/損失</strong>：需取得航空公司開立之行李延誤/損壞證明，以及購買必要日用品之發票明細。</li>
-        <li><strong>海外突發疾病就醫</strong>：需索取「診斷證明書」與「醫療費用收據正本/明細」。</li>
-      </ul>
-    </section>
-  </main>
-
-  <script>
-    const insuranceData = [
-      {
-        id: 'tw',
-        name: '臺灣產物保險',
-        badge: '主動理賠最便利',
-        badgeColor: 'bg-emerald-100 text-emerald-800',
-        baseRates: { basic: 240, standard: 380, premium: 680 },
-        delayBenefit: '滿 4 小時給付 6,000 元（最高 2.4 萬）',
-        cancelBenefit: '限額 5 ~ 10 萬元',
-        luggageBenefit: '定額 6,000 元',
-        diseaseBonus: '日韓 2 倍 / 美加 2.5 倍',
-        link: 'https://ec.tfmi.com.tw/',
-        channel: '預先登錄航班享簡訊主動理賠 / 官網線上申辦',
-        features: ['網購預先登錄航班，延誤自動簡訊理賠', '包含班機改降慰問金 5,000 元', '突發疾病海外醫療自動加倍保額']
-      },
-      {
-        id: 'cathay',
-        name: '國泰產險',
-        badge: '理賠流程成熟',
-        badgeColor: 'bg-blue-100 text-blue-800',
-        baseRates: { basic: 260, standard: 410, premium: 720 },
-        delayBenefit: '每滿 4 小時給付（最高 8,000 元/次）',
-        cancelBenefit: '限額最高 6 ~ 10 萬元',
-        luggageBenefit: '定額 3,000 ~ 5,000 元',
-        diseaseBonus: '視投保方案額度而定',
-        link: 'https://www.cathayholdings.com/insurance/',
-        channel: '國泰線上 App / 門市郵寄 / 官網理賠專區',
-        features: ['不便險保障完整，涵蓋護照遺失補償', '包含信用卡盜用與食品中毒補償', '品牌知名度高，服務據點多']
-      },
-      {
-        id: 'fubon',
-        name: '富邦產險',
-        badge: '保障範圍最全面',
-        badgeColor: 'bg-amber-100 text-amber-800',
-        baseRates: { basic: 280, standard: 430, premium: 750 },
-        delayBenefit: '每滿 4 小時 6,000 元（最高 1.2 萬）',
-        cancelBenefit: '實支實付最高 6 萬元',
-        luggageBenefit: '實支實付 / 定額擇優',
-        diseaseBonus: '依專案提供突發疾病加碼',
-        link: 'https://www.fubon.com/insurance/b2c/content/prod_travel/index.html',
-        channel: '富邦官網一般海外旅平險專區',
-        features: ['海外急難救助與高額專機救援', '行程取消/更改採實支實付精準補償', '海外突發疾病門診住院保障齊全']
-      },
-      {
-        id: 'chubb',
-        name: '安達產物',
-        badge: '醫療加碼高',
-        badgeColor: 'bg-purple-100 text-purple-800',
-        baseRates: { basic: 250, standard: 390, premium: 700 },
-        delayBenefit: '滿 4 小時給付定額',
-        cancelBenefit: '依方案額度提供',
-        luggageBenefit: '定額補償',
-        diseaseBonus: '歐日韓 1.5 ~ 2 倍 / 美加加倍',
-        link: 'https://www.chubb.com/tw-zh/',
-        channel: '線上投保平台 / 合作保經代',
-        features: ['涵蓋法定傳染病保障', '適合歐美日韓等高醫療費用國家', '海外突發疾病醫療加倍機制']
-      },
-      {
-        id: 'nanshan',
-        name: '南山產物',
-        badge: '變更補償額度高',
-        badgeColor: 'bg-rose-100 text-rose-800',
-        baseRates: { basic: 250, standard: 400, premium: 710 },
-        delayBenefit: '滿 4 小時給付定額',
-        cancelBenefit: '限額最高 6 萬元',
-        luggageBenefit: '定額補償',
-        diseaseBonus: '依方案加碼',
-        link: 'https://www.nanshaninsurance.com.tw/',
-        channel: '南山產物線上理賠專區',
-        features: ['行程變更與旅行文件遺失給付大方', '緊急醫療轉送服務', '線上投保操作簡易快速']
-      }
-    ];
-
-    function calculateApp() {
-      const region = document.getElementById('region').value;
-      const days = parseInt(document.getElementById('days').value) || 1;
-      const planLevel = document.getElementById('planLevel').value;
-
-      let regionMultiplier = 1.0;
-      if (region === 'europe') regionMultiplier = 1.3;
-      if (region === 'america') regionMultiplier = 1.5;
-
-      const dayMultiplier = 1 + (days - 1) * 0.12;
-
-      const cardsContainer = document.getElementById('cardsContainer');
-      const tableBody = document.getElementById('tableBody');
-
-      cardsContainer.innerHTML = '';
-      tableBody.innerHTML = '';
-
-      insuranceData.forEach(item => {
-        const base = item.baseRates[planLevel];
-        const estimatedFee = Math.round(base * dayMultiplier * regionMultiplier);
-
-        const cardHtml = `
-          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col justify-between hover:shadow-md transition">
-            <div>
-              <div class="flex justify-between items-start mb-2">
-                <h3 class="font-bold text-lg text-slate-800">${item.name}</h3>
-                <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${item.badgeColor}">${item.badge}</span>
-              </div>
-              <div class="my-3 p-3 bg-slate-50 rounded-lg">
-                <span class="text-xs text-slate-500 block">預估保費 (${days}天)</span>
-                <span class="text-2xl font-extrabold text-blue-600">NT$ ${estimatedFee.toLocaleString()}</span>
-              </div>
-              <ul class="text-xs text-slate-600 space-y-2 mb-4">
-                <li class="flex items-start gap-1.5"><i class="fa-solid fa-plane-arrival text-blue-500 mt-0.5"></i> <span><strong>班機延誤：</strong>${item.delayBenefit}</span></li>
-                <li class="flex items-start gap-1.5"><i class="fa-solid fa-suitcase text-blue-500 mt-0.5"></i> <span><strong>行李延誤：</strong>${item.luggageBenefit}</span></li>
-                <li class="flex items-start gap-1.5"><i class="fa-solid fa-notes-medical text-blue-500 mt-0.5"></i> <span><strong>醫療加碼：</strong>${item.diseaseBonus}</span></li>
-              </ul>
+    <!-- Modal Popup for Details -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div>
+                    <h2 id="modalCompanyName" style="font-size: 20px; font-weight: 800; color: #111827;">--</h2>
+                    <p id="modalPlanName" style="font-size: 13px; color: #2563eb; font-weight: 600; margin-top: 2px;">--</p>
+                </div>
+                <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
-            <div class="border-t pt-3 flex items-center justify-between">
-              <span class="text-xs text-slate-500"><i class="fa-solid fa-headset text-slate-400 mr-1"></i> ${item.channel}</span>
-              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-lg transition">前往投保</a>
+            
+            <div class="modal-section">
+                <div class="modal-section-title">💡 方案核心特色與亮點</div>
+                <ul class="feature-list" id="modalPros"></ul>
             </div>
-          </div>
-        `;
-        cardsContainer.innerHTML += cardHtml;
 
-        const rowHtml = `
-          <tr class="hover:bg-slate-50">
-            <td class="p-3 font-semibold text-slate-800">${item.name}</td>
-            <td class="p-3 font-bold text-blue-600">NT$ ${estimatedFee.toLocaleString()}</td>
-            <td class="p-3">${item.delayBenefit}</td>
-            <td class="p-3">${item.cancelBenefit}</td>
-            <td class="p-3">${item.luggageBenefit}</td>
-            <td class="p-3">${item.diseaseBonus}</td>
-            <td class="p-3 text-xs"><a href="${item.link}" target="_blank" rel="noopener noreferrer" class="text-blue-600 font-medium underline">前往官網</a></td>
-          </tr>
-        `;
-        tableBody.innerHTML += rowHtml;
-      });
-    }
+            <div class="modal-section">
+                <div class="modal-section-title">⚠️ 投保注意事項 / 缺點</div>
+                <ul class="feature-list cons-list" id="modalCons"></ul>
+            </div>
 
-    document.addEventListener('DOMContentLoaded', calculateApp);
-  </script>
+            <div class="modal-section">
+                <div class="modal-section-title">🎯 最適合族群</div>
+                <p id="modalTarget" style="font-size: 14px; color: #4b5563; background: #f9fafb; padding: 12px; border-radius: 8px;"></p>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <a id="modalApplyBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="flex: 1; justify-content: center; padding: 12px;">前往官網線上投保</a>
+                <button class="btn btn-outline" onclick="closeModal()">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pure Native JavaScript Code Logic -->
+    <script>
+        // 8 Major Insurance Companies Master Database (2026 Q4 Updated)
+        const insuranceData = [
+            {
+                id: 'fubon',
+                name: '富邦產險',
+                desc: '班機延誤理賠高、不便險極齊全',
+                basePrice200: 482, // Base price for 4 days, 200萬 coverage
+                basePrice500: 568, // Aligned with market ~549-606
+                basePrice1000: 980,
+                delayThreshold: '4小時 6,000元 / 累進最高1.2萬',
+                baggage: '行李延誤 6,000元 / 損失最高 3萬',
+                covid: '可選含/不含 (選擇多樣)',
+                rescue: '美金 50,000 (約150萬)',
+                pros: ['班機延誤達4小時給付6000，累積滿9小時可再領6000，理賠極佳', '包含行程取消、行程更改多項實用不便險項', '海外緊急救援額度極高'],
+                cons: ['線上投保核保年齡與保額較嚴格', '保費略高於市場平均'],
+                targetGroup: '經常搭乘廉航、轉機，重視班機延誤與不便險補償的旅客。',
+                url: 'https://www.fubon.com/insurance/b2c/content/prod_travel/index1.html',
+                category: ['delay']
+            },
+            {
+                id: 'cathay',
+                name: '國泰產險',
+                desc: '線上投保流程流暢、方案彈性大',
+                basePrice200: 390,
+                basePrice500: 510,
+                basePrice1000: 920,
+                delayThreshold: '4小時 5,000元 (定額)',
+                baggage: '行李延誤 5,000元 / 損失 1萬',
+                covid: '自由選擇 (甲型含 / 乙型不含)',
+                rescue: '美金 30,000 (約90萬)',
+                pros: ['區分含傳染病/不含傳染病方案，選不含可省保費', '介面體驗佳，核保理賠速度評價高'],
+                cons: ['班機延誤僅定額一次，無累進給付'],
+                targetGroup: '追求系統操作順暢、保費彈性高的小資族與自由行旅客。',
+                url: 'https://www.cathayholdings.com/insurance/',
+                category: ['cp']
+            },
+            {
+                id: 'shinansangyo',
+                name: '新安東京海上',
+                desc: '高 CP 值首選、小資最愛',
+                basePrice200: 310,
+                basePrice500: 430,
+                basePrice1000: 780,
+                delayThreshold: '4小時 3,000元 (定額)',
+                baggage: '行李延誤 3,000元 / 損失 1萬',
+                covid: '不含法定傳染病',
+                rescue: 'NT$ 50萬',
+                pros: ['整體保費非常親民，基礎保障完整', '適合短程亞洲旅遊迅速投保'],
+                cons: ['突發疾病醫療額度較無特別加碼', '不便險保額相對基礎'],
+                targetGroup: '預算敏感型旅客、短天數快閃旅遊者。',
+                url: 'https://www.tmnewa.com.tw/',
+                category: ['cp']
+            },
+            {
+                id: 'chubb',
+                name: '安達產險',
+                desc: '外商背景、日韓歐美醫療加碼',
+                basePrice200: 450,
+                basePrice500: 590,
+                basePrice1000: 1050,
+                delayThreshold: '4小時 4,000元',
+                baggage: '行李延誤 4,000元 / 損失 1.5萬',
+                covid: '包含 (含法定傳染病)',
+                rescue: '美金 50,000 (約150萬)',
+                pros: ['指定旅遊區域（如日韓/歐美）突發疾病保額自動升級 1.5 倍', '完整包含法定傳染病突發醫療'],
+                cons: ['條款細節要求較嚴格（如單據正本要求）'],
+                targetGroup: '前往日、韓、歐美等高醫療費用國家，重視海外醫療保障者。',
+                url: 'https://www.chubb.com/tw-zh/',
+                category: ['japan', 'senior']
+            },
+            {
+                id: 'taiwan',
+                name: '台灣產險',
+                desc: '豪華型個人責任險保障佳',
+                basePrice200: 380,
+                basePrice500: 490,
+                basePrice1000: 890,
+                delayThreshold: '4小時 4,000元',
+                baggage: '行李延誤 4,000元 / 損失 2萬',
+                covid: '包含 (含法定傳染病)',
+                rescue: 'NT$ 100萬',
+                pros: ['個人責任險保障完善（無自負額）', '海外突發疾病醫療保障範圍涵蓋面廣'],
+                cons: ['線上投保系統介面較傳統'],
+                targetGroup: '租車自駕行者、重視在地損害賠償責任的旅客。',
+                url: 'https://ec.tfmi.com.tw/',
+                category: ['senior']
+            },
+            {
+                id: 'ctbc',
+                name: '中信產險',
+                desc: '隨身財物防護與實惠組合',
+                basePrice200: 340,
+                basePrice500: 450,
+                basePrice1000: 820,
+                delayThreshold: '4小時 3,500元',
+                baggage: '行李延誤 3,500元 / 損失 2萬',
+                covid: '不含法定傳染病',
+                rescue: 'NT$ 50萬',
+                pros: ['附加隨身財物失竊/盜搶給付項目', '保費與保障項目整體均衡'],
+                cons: ['海外緊急救援上限略低'],
+                targetGroup: '攜帶貴重物品、攝影器材出國的旅客。',
+                url: 'https://www.ctbcins.com/',
+                category: ['cp']
+            },
+            {
+                id: 'nanshan',
+                name: '南山產險',
+                desc: '海外醫療與急難救援扎實',
+                basePrice200: 420,
+                basePrice500: 550,
+                basePrice1000: 990,
+                delayThreshold: '4小時 4,000元',
+                baggage: '行李延誤 4,000元 / 損失 1.5萬',
+                covid: '包含 (含法定傳染病)',
+                rescue: '美金 50,000 (約150萬)',
+                pros: ['海外突發疾病與救援專機額度極高', '條款給付明確，大品牌信任度高'],
+                cons: ['不便險給付規範偏標準型'],
+                targetGroup: '家庭旅遊、陪同長輩出國首選。',
+                url: 'https://www.nanshangeneral.com.tw/',
+                category: ['senior']
+            },
+            {
+                id: 'mingtai',
+                name: '明台產險',
+                desc: '日資背景、日本在地支援強',
+                basePrice200: 410,
+                basePrice500: 530,
+                basePrice1000: 950,
+                delayThreshold: '3小時 3,000元 (門檻低)',
+                baggage: '行李延誤 3,000元 / 損失 2萬',
+                covid: '可選含/不含',
+                rescue: 'NT$ 100萬',
+                pros: ['班機延誤觸發門檻僅需 3 小時（市場最低）', '日資母公司，日本當地救援與理賠機制完善'],
+                cons: ['線上試算流程步驟稍多'],
+                targetGroup: '專門前往日本自由行、希望班機延誤門檻最低者。',
+                url: 'https://www.msig-mingtai.com.tw/MobileWeb/Travel/Insure/StepInput',
+                category: ['japan', 'delay']
+            }
+        ];
+
+        // State Management
+        let pinnedIds = [];
+        let currentScenario = 'all';
+
+        // Initialize DOM Elements
+        const travelDaysInput = document.getElementById('travelDays');
+        const daysValueSpan = document.getElementById('daysValue');
+        const mainCoverageSelect = document.getElementById('mainCoverage');
+        const ageGroupSelect = document.getElementById('ageGroup');
+        const destinationSelect = document.getElementById('destination');
+        const prefCovidCheck = document.getElementById('prefCovid');
+        const prefFlightDelayCheck = document.getElementById('prefFlightDelay');
+        const tableBody = document.getElementById('insuranceTableBody');
+
+        // Event Listeners for Dynamic Calculation
+        travelDaysInput.addEventListener('input', (e) => {
+            daysValueSpan.textContent = `${e.target.value} 天`;
+            renderTable();
+        });
+        mainCoverageSelect.addEventListener('change', renderTable);
+        ageGroupSelect.addEventListener('change', renderTable);
+        destinationSelect.addEventListener('change', renderTable);
+        prefCovidCheck.addEventListener('change', renderTable);
+        prefFlightDelayCheck.addEventListener('change', renderTable);
+
+        // Dynamic Premium Calculation Algorithm
+        function calculatePremium(item) {
+            const days = parseInt(travelDaysInput.value);
+            const coverage = mainCoverageSelect.value;
+            
+            // Base Premium for 4 days
+            let base = item.basePrice500;
+            if (coverage === '200') base = item.basePrice200;
+            if (coverage === '1000') base = item.basePrice1000;
+
+            // Day Scaling Ratio
+            let dayFactor = 1;
+            if (days < 4) dayFactor = 0.7 + (days * 0.08);
+            else if (days > 4) dayFactor = 1 + ((days - 4) * 0.12);
+
+            // Age & Destination Multiplier
+            let extraFactor = 1.0;
+            if (ageGroupSelect.value === 'senior') extraFactor *= 1.25;
+            if (destinationSelect.value === 'europe_usa') extraFactor *= 1.15;
+            if (prefCovidCheck.checked && item.covid.includes('可選')) extraFactor *= 1.08;
+
+            return Math.round(base * dayFactor * extraFactor);
+        }
+
+        // Overseas Medical Calculation Logic
+        function getMedicalCoverage(item) {
+            const coverage = mainCoverageSelect.value;
+            let baseVal = 50;
+            if (coverage === '200') baseVal = 50;
+            if (coverage === '500') baseVal = 100;
+            if (coverage === '1000') baseVal = 150;
+
+            if (destinationSelect.value === 'japan_korea' && item.id === 'chubb') {
+                return `${Math.round(baseVal * 1.5)} 萬 (日韓加碼)`;
+            }
+            return `${baseVal} 萬`;
+        }
+
+        // Scenario Tag Filter
+        function filterScenario(scenario, btn) {
+            currentScenario = scenario;
+            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTable();
+        }
+
+        // Pin/Unpin Company
+        function togglePin(id) {
+            if (pinnedIds.includes(id)) {
+                pinnedIds = pinnedIds.filter(i => i !== id);
+            } else {
+                if (pinnedIds.length >= 4) {
+                    alert('最多只能釘選 4 家保險公司進行專屬對比！');
+                    return;
+                }
+                pinnedIds.push(id);
+            }
+            renderTable();
+        }
+
+        // Core Render Table Function
+        function renderTable() {
+            tableBody.innerHTML = '';
+
+            // Filter Dataset
+            let filtered = insuranceData.filter(item => {
+                if (prefCovidCheck.checked && item.covid.includes('不含')) return false;
+                if (prefFlightDelayCheck.checked && !item.category.includes('delay')) return false;
+                if (currentScenario !== 'all' && !item.category.includes(currentScenario)) return false;
+                return true;
+            });
+
+            // Sort by Pinned First
+            filtered.sort((a, b) => {
+                const aPinned = pinnedIds.includes(a.id);
+                const bPinned = pinnedIds.includes(b.id);
+                if (aPinned && !bPinned) return -1;
+                if (!aPinned && bPinned) return 1;
+                return 0;
+            });
+
+            if (filtered.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding: 40px; color: #6b7280;">沒有符合所選條件的保險方案，請嘗試放寬篩選條件。</td></tr>`;
+                return;
+            }
+
+            // Generate Table Rows
+            filtered.forEach(item => {
+                const calculatedPrice = calculatePremium(item);
+                const medicalCoverage = getMedicalCoverage(item);
+                const isPinned = pinnedIds.includes(item.id);
+
+                const tr = document.createElement('tr');
+                if (isPinned) tr.classList.add('pinned');
+
+                tr.innerHTML = `
+                    <td>
+                        <div class="company-info">
+                            <div class="company-name">
+                                <button class="pin-btn ${isPinned ? 'active' : ''}" onclick="togglePin('${item.id}')" title="釘選對比">📌</button>
+                                ${item.name}
+                            </div>
+                            <div class="company-desc">${item.desc}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="price-tag">NT$ ${calculatedPrice.toLocaleString()}</span>
+                    </td>
+                    <td><strong>${mainCoverageSelect.value} 萬</strong></td>
+                    <td>${medicalCoverage}</td>
+                    <td><span class="tag-pill ${item.id === 'fubon' || item.id === 'mingtai' ? 'pill-yellow' : 'pill-gray'}">${item.delayThreshold}</span></td>
+                    <td>${item.baggage}</td>
+                    <td><span class="tag-pill ${item.covid.includes('包含') ? 'pill-green' : (item.covid.includes('可選') ? 'pill-blue' : 'pill-gray')}">${item.covid}</span></td>
+                    <td>${item.rescue}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">線上投保</a>
+                            <button class="btn btn-outline" onclick="openModal('${item.id}')">詳情</button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Modal Functions
+        function openModal(id) {
+            const item = insuranceData.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('modalCompanyName').textContent = item.name;
+            document.getElementById('modalPlanName').textContent = `${item.desc} (2026 Q4 方案)`;
+            document.getElementById('modalTarget').textContent = item.targetGroup;
+            document.getElementById('modalApplyBtn').href = item.url;
+
+            const prosList = document.getElementById('modalPros');
+            prosList.innerHTML = item.pros.map(p => `<li>${p}</li>`).join('');
+
+            const consList = document.getElementById('modalCons');
+            consList.innerHTML = item.cons.map(c => `<li>${c}</li>`).join('');
+
+            document.getElementById('detailModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('open');
+        }
+
+        // Close Modal when clicking outside
+        document.getElementById('detailModal').addEventListener('click', (e) => {
+            if (e.target.id === 'detailModal') closeModal();
+        });
+
+        // First Render Init
+        renderTable();
+    </script>
 </body>
 </html>
